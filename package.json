@@ -1,0 +1,27 @@
+{
+  "name": "jsonscript-test",
+  "version": "0.1.0",
+  "description": "Testing JSONScript scripts using test suites",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JSONScript/jsonscript-test.git"
+  },
+  "keywords": [
+    "JSONScript",
+    "testing"
+  ],
+  "author": "Evgeny Poberezkin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JSONScript/jsonscript-test/issues"
+  },
+  "homepage": "https://github.com/JSONScript/jsonscript-test#readme",
+  "dependencies": {
+    "ajv": "^3.7.0",
+    "jsonscript-test-suite": "^0.1.0"
+  }
+}
