@@ -22,6 +22,8 @@
   "homepage": "https://github.com/JSONScript/jsonscript-test#readme",
   "dependencies": {
     "ajv": "^3.7.0",
+    "glob": "^7.0.0",
+    "jsonscript": "^0.1.2",
     "jsonscript-test-suite": "^0.1.0"
   }
 }

@@ -3,12 +3,17 @@
 var glob = require('glob');
 var path = require('path');
 var assert = require('assert');
+var Ajv = require('ajv');
 
 module.exports = jsonScriptTest;
 
+var ajv = Ajv({ allErrors: true });
+ajv.addSchema(require('jsonscript/schema/schema.json'));
+var validate = ajv.compile(require('jsonscript-test-suite/test_suite_schema.json'));
+
 
 function jsonScriptTest(jsInterpreters, opts) {
-  skipOrOnly(opts, describe)(opts.description || 'JSON schema tests', function() {
+  skipOrOnly(opts, describe)(opts.description || 'JSONScript tests', function() {
     if (opts.timeout) this.timeout(opts.timeout);
     for (var suiteName in opts.suites)
       addTests(suiteName, opts.suites[suiteName]);
@@ -23,11 +28,16 @@ function jsonScriptTest(jsInterpreters, opts) {
         var filter = {
           skip: getFileFilter(file, 'skip'),
           only: getFileFilter(file, 'only')
-        }
+        };
 
         skipOrOnly(filter, describe)(file.name, function() {
           var testDir = path.dirname(file.path);
           var testSuite = require(file.path);
+
+          var valid = validate(testSuite);
+          if (!valid) console.error('Error validating', file.name, '\nErrors:\n', validate.errors);
+          assert(valid);
+
 
           testSuite.forEach(function (testSet) {
             skipOrOnly(testSet, describe)(testSet.description, function() {
@@ -48,53 +58,44 @@ function jsonScriptTest(jsInterpreters, opts) {
                   function testResult(res) {
                     if (test.result) {
                       var method = typeof res == 'object' ? 'deepStrictEqual' : 'strictEqual';
-                      try { assert[method](res, test.result); }
-                      catch(e) { throw e; }
+                      try {
+                        assert[method](res, test.result);
+                        suiteHooks(true, res);
+                      } catch(e) {
+                        suiteHooks(false, res);
+                        throw e;
+                      }
                     } else {
+                      suiteHooks(false, res);
                       throw new Error('should have failed');
                     }
-
-
-                    // var passed = valid === test.valid;
-                    // if (!passed && opts.log !== false)
-                    //   console.log('result:', valid, '\nexpected: ', test.valid, '\nerrors:', validator.errors);
-                    // if (valid) assert(!errors || errors.length == 0);
-                    // else assert(errors.length > 0);
-
-                    // suiteHooks(passed, valid, errors);
-                    // assert.equal(valid, test.valid);
                   }
 
                   function testException(err) {
                     if (test.result) {
+                      suiteHooks(false, undefined, err);
                       throw err;
                     } else {
-                      try { assert.equal(err.message, test.error); }
-                      catch(e) { throw e; }
+                      try {
+                        if (test.error !== true)
+                          assert.equal(err.message, test.error);
+                        suiteHooks(true, undefined, err);
+                      } catch(e) {
+                        suiteHooks(false, undefined, err);
+                        throw e;
+                      }
                     }
-
-                    // var passed = err.message == test.error;
-                    // if (!passed && opts.log !== false)
-                    //   console.log('error:', err.message,
-                    //     '\nexpected: ',
-                    //     test.valid ? 'valid'
-                    //       : test.valid === false ? 'invalid'
-                    //       : 'error ' + test.error);
-
-                    // suiteHooks(passed);
-                    // assert.equal(err.message, test.error);
                   }
 
-                  function suiteHooks(passed, valid, errors) {
+                  function suiteHooks(passed, result, error) {
                     var result = {
                       passed: passed,
-                      validator: validator,
-                      schema: schema,
+                      jsInterpreter: js,
+                      script: script,
                       data: data,
-                      valid: valid,
-                      expected: test.valid,
-                      expectedError: test.error,
-                      errors: errors
+                      test: test,
+                      result: result,
+                      error: error
                     };
 
                     if (opts.afterEach) opts.afterEach(result);
