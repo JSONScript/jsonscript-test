@@ -1,6 +1,6 @@
 {
   "name": "jsonscript-test",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Testing JSONScript scripts using test suites",
   "main": "index.js",
   "scripts": {
