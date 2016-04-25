@@ -1,6 +1,6 @@
 {
   "name": "jsonscript-test",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Testing JSONScript scripts using test suites",
   "main": "index.js",
   "scripts": {
@@ -23,7 +23,7 @@
   "dependencies": {
     "ajv": "^3.7.0",
     "glob": "^7.0.0",
-    "jsonscript": "^0.1.2",
+    "jsonscript": "^0.2.0",
     "jsonscript-test-suite": "^0.1.0"
   }
 }
