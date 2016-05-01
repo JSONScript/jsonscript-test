@@ -57,9 +57,14 @@ function jsonScriptTest(jsInterpreters, opts) {
 
                   function testResult(res) {
                     if (test.result !== undefined) {
-                      var method = typeof res == 'object' && res !== null
-                                    ? 'deepStrictEqual'
-                                    : 'strictEqual';
+                      var method;
+                      if (typeof res == 'object' && res !== null) {
+                        method = 'deepStrictEqual';
+                        res = JSON.parse(JSON.stringify(res));
+                      } else {
+                        method = 'strictEqual';
+                      }
+
                       try {
                         assert[method](res, test.result);
                         suiteHooks(true, res);
