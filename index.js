@@ -7,7 +7,7 @@ var Ajv = require('ajv');
 
 module.exports = jsonScriptTest;
 
-var ajv = Ajv({ allErrors: true });
+var ajv = Ajv({ allErrors: true, v5: true });
 ajv.addSchema(require('jsonscript/schema/schema.json'));
 var validate = ajv.compile(require('jsonscript-test-suite/test_suite_schema.json'));
 
